@@ -15,7 +15,7 @@ on:
       - master
   #     ↑↑↑ 改成你的分支名, 一般是master
   schedule:
-    - cron: 0 20 * * *
+      - cron: 0 20 * * *
   # release:
   #   types: [published]
 
@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
         with:
-          ref: CI-master
+          ref: master
         #      ↑↑↑ 改成你的分支名, 一般是master
 
       - name: Initialization environment
@@ -61,7 +61,7 @@ jobs:
         run: |
           git remote add openwrt https://github.com/coolsnowwolf/lede.git
           git pull openwrt master
-          git remote -v
+          git remote -v    
       - name: Update feeds
         run: |
           ./scripts/feeds update -a
@@ -104,11 +104,6 @@ jobs:
           CONFIG_TARGET_x86_64=y
           CONFIG_TARGET_x86_64_Generic=y
           EOF
-          # 设置固件大小:
-          # cat >> .config <<EOF
-          # CONFIG_TARGET_KERNEL_PARTSIZE=30
-          # CONFIG_TARGET_ROOTFS_PARTSIZE=1024
-          # EOF
           # 固件压缩:
           cat >> .config <<EOF
           CONFIG_TARGET_IMAGES_GZIP=y
