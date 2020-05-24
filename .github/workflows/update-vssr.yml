@@ -1,0 +1,44 @@
+#
+# This is free software, lisence use MIT.
+# 
+# Copyright (C) 2020 KFERMercer <KFER.Mercer@gmail.com>
+# 
+# <https://github.com/KFERMercer/OpenWrt-CI>
+#
+
+name: Update-vssr
+
+on:
+  schedule:
+    - cron: 40 19 * * *
+
+jobs:
+
+  prepare:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        ref: master
+        fetch-depth: 0
+        lfs: true
+
+    - name: Set git identity
+      run : |
+        git config --global user.email "KFER.Mercer@gmail.com"
+        git config --global user.name "KFERMercer"
+    - name: Load vssr
+      run: |
+        git clone https://github.com/jerrykuku/luci-app-vssr.git --depth=1 ./tmp/vssr
+        cp -rf ./tmp/vssr/luci-app-vssr ./package/lean/
+    - name: Apply commit changes
+      run: |
+        git add ./package/lean/luci-app-vssr
+        echo -e "[bot] luci-app-vssr: update\n\nlatest commit: $(cat ./tmp/vssr/.git/refs/heads/master)" > ./tmp/message
+        git commit -F ./tmp/message || exit 0
+    - name: Push Commits
+      run: git push origin master
